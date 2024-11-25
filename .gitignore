@@ -100,4 +100,8 @@ __pypackages__/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,pythonvanilla,jupyternotebooks
 
+# Don't commit credentials
 .env
+
+# Don't commit export folder
+data
