@@ -1,8 +1,10 @@
 import logging
 import os
 from typing import List
+import warnings
 
 from dotenv import load_dotenv
+from tqdm import tqdm
 import pandas as pd
 import pyodbc
 
@@ -75,6 +77,8 @@ def get_table_data(connection, table_name: str) -> None:
 
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+    
     SQL_SERVER = os.getenv("SQL_SERVER")
     SQL_DB = os.getenv("SQL_DB")
     SQL_ID = os.getenv("SQL_ID")
@@ -97,7 +101,9 @@ if __name__ == "__main__":
 
     tables_names = get_tables_names(conn)
     
-    for table_name in tables_names:
+    for table_name in tqdm(tables_names, desc="Processing Tables"):
         get_table_data(conn, table_name)
 
     conn.close()
+
+    warnings.resetwarnings()
