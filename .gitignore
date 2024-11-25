@@ -105,3 +105,6 @@ __pypackages__/
 
 # Don't commit export folder
 data
+
+# Don't commit logs
+logs
