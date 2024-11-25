@@ -42,30 +42,30 @@ def connect_to_sql_server(server, database, login, password):
 
 def get_tables_names(connection):
     query = f"""
-    SELECT TABLE_NAME
+    SELECT TABLE_NAME, TABLE_SCHEMA
     FROM INFORMATION_SCHEMA.TABLES
     WHERE TABLE_SCHEMA IN ('Person', 'Product', 'Sales')
     """
     
     try:
         # Squeeze is here to transform the DataFrame in a Series
-        df = pd.read_sql_query(query, connection).squeeze()
+        df = pd.read_sql_query(query, connection)
         logging.info(f"Got {len(df)} table names")
-        return df.to_list()
+        df["full_name"] = df.TABLE_SCHEMA + "." + df.TABLE_NAME
+        return df.full_name.to_list()
     except Exception as e:
         logging.error(f"An error occured during list extraction: {e}")
 
 
-def get_table_data(connection, query, output_file) -> None:
+def get_table_data(connection, table_name: str) -> None:
     """
     Extract data from Azure database thanks to a SQL query.
     Output a CSV File.
     """
-    output_dir = os.path.exists(output_file)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-        logging.info("👍 Folder {output_dir} was created!")
-
+    output_file = f"data/{table_name}.csv"
+    # Review alternatives to f-strings
+    query = f"SELECT * FROM {table_name}"
+    
     try:
         df = pd.read_sql_query(query, connection)
         logging.info(f"5 first lines of extracted data:\n {df.head()}")
@@ -80,20 +80,24 @@ if __name__ == "__main__":
     SQL_ID = os.getenv("SQL_ID")
     SQL_PW = os.getenv("SQL_PW")
 
+    # Secure credentials are properly set
     if not all([SQL_SERVER, SQL_DB, SQL_ID, SQL_PW]):
         logging.error("⚠️ At least one environment variable missing!")
         raise ValueError("⚠️ At least one environment variable missing!")
 
     logging.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
+    
+    # Secure output folder exists
+    if not os.path.exists("data/"):
+        os.makedirs("data/")
+        logging.info("👍 Folder {output_dir} was created!")
 
+    # Connection
     conn = connect_to_sql_server(SQL_SERVER, SQL_DB, SQL_ID, SQL_PW)
 
-    # query = "SELECT * FROM Production.Product"
-
-    # extract_data(conn, query, output_file="./data/azure_data.csv")
+    tables_names = get_tables_names(conn)
     
-    # print(get_tables(conn, "Person"))
-    
-    print(get_tables_names(conn))
+    for table_name in tables_names:
+        get_table_data(conn, table_name)
 
     conn.close()
