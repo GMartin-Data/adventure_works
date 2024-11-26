@@ -89,6 +89,6 @@ if __name__ == "__main__":
     logging.info(f"List of parquet files: {blobs_list}")
     
     for blob in tqdm(blobs_list, desc="Parquet Files Download...", unit="file"):
-        download_path = f"./data/parquet/{blob}"
+        download_path = f"./data/{blob}"
         download_parquet_with_sas(full_url, blob, download_path)
         
