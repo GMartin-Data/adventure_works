@@ -74,10 +74,12 @@ def get_table_data(connection, table_name: str) -> None:
 
     try:
         df = pd.read_sql_query(query, connection)
-        logging.info(f"5 first lines of extracted data:\n {df.head()}")
+        logging.info(f"✅ Successfully extracted data from table '{table_name}'")
         df.to_csv(output_file, index=False)
     except Exception as e:
-        logging.error(f"An error occured during data extraction: {e}")
+        logging.error(
+            f"❌ An error occured during data extractionfrom table '{table_name}':\n{e}"
+        )
 
 
 if __name__ == "__main__":
@@ -98,7 +100,7 @@ if __name__ == "__main__":
     # Secure output folder exists
     if not os.path.exists("data/db"):
         os.makedirs("data/db")
-        logging.info("👍 Folder {output_dir} was created!")
+        logging.info(f"👍 Folder 'data/db' was created!")
 
     # Connection
     conn = connect_to_sql_server(SQL_SERVER, SQL_DB, SQL_ID, SQL_PW)
