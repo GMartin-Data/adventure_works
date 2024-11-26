@@ -35,15 +35,8 @@ with open(csv_file, mode="w", newline="", encoding="utf-8") as csv_writefile:
         # Decode and save image as PNG
         try:
             img = row["image"]["bytes"]
-            # print(type(img))
-            # input("CONTINUE?")
-            # image_data = base64.b64decode(img)
             with Image.open(io.BytesIO(img)) as image:
                 image.save(os.path.join(images_folder, f"{idx}.png"), format="PNG")
         except Exception as e:
             print(f"Error processing image at index: {idx}:\n{e}")
 
-# rprint(lazy_df
-#        .limit(10)
-#        .collect()
-# )
