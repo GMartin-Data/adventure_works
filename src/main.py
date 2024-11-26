@@ -23,7 +23,7 @@ if not os.path.exists(log_dir):
 logging.basicConfig(
     filename="./logs/parquet_extraction.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
 )
 
 # Logger instanciation
@@ -42,7 +42,7 @@ def generate_sas_token(datalake, account_key, container_name):
         )
         return sas_token
     except Exception as e:
-        logging.error(f"SAS Error : {e}")
+        logging.error(f"❌ SAS Error : {e}")
         raise
 
 
@@ -54,7 +54,7 @@ def generate_sas_url() -> str:
     return f"https://{datalake}.blob.core.windows.net/{container}?{sas_token}"
 
 
-def list_blobs_with_etension(container_url, file_extension="parquet") -> List[str]:
+def list_blobs_with_extension(container_url, file_extension="parquet") -> List[str]:
     try:
         container_client = ContainerClient.from_container_url(container_url)
         blobs = container_client.list_blobs()
@@ -63,7 +63,7 @@ def list_blobs_with_etension(container_url, file_extension="parquet") -> List[st
         ]
         return blob_names
     except Exception as e:
-        logging.error(f"Error when generating blob names' list: {e}")
+        logging.error(f"❌ Error when generating blob names' list: {e}")
         raise
 
 
@@ -76,17 +76,17 @@ def download_parquet_with_sas(container_url, blob_name, download_path):
         with open(download_path, "wb") as file:
             file.write(blob_client.download_blob().readall())
 
-        logging.info(f"Downloaded blob: {blob_name} -> {download_path}")
+        logging.info(f"✅ Downloaded blob: {blob_name} -> {download_path}")
     except Exception as e:
-        logging.error(f"Error during download of {blob_name}: {e}")
+        logging.error(f"❌ Error during download of {blob_name}: {e}")
         raise
 
 
 if __name__ == "__main__":
     full_url = generate_sas_url()
 
-    blobs_list = list_blobs_with_etension(full_url)
-    logging.info(f"List of parquet files: {blobs_list}")
+    blobs_list = list_blobs_with_extension(full_url)
+    logging.info(f"✅ List of parquet files: {blobs_list}")
 
     for blob in tqdm(blobs_list, desc="Parquet Files Download...", unit="file"):
         download_path = f"./data/{blob}"
