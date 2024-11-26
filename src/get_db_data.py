@@ -47,8 +47,9 @@ def connect_to_sql_server(server, database, login, password):
 def get_tables_names(connection):
     query = f"""
     SELECT TABLE_NAME, TABLE_SCHEMA
-    FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_SCHEMA IN ('Person', 'Product', 'Sales')
+      FROM INFORMATION_SCHEMA.TABLES
+     WHERE TABLE_SCHEMA IN ('Person', 'Production', 'Sales')
+       AND TABLE_NAME NOT LIKE 'v%'
     """
     
     try:
