@@ -17,7 +17,7 @@ if not os.path.exists(LOGS_DIRECTORY):
 
 # Logger configuration
 logging.basicConfig(
-    filename="./logs/sql_extraction.log",
+    filename="./logs/db_extraction.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
@@ -64,7 +64,7 @@ def get_table_data(connection, table_name: str) -> None:
     Extract data from Azure database thanks to a SQL query.
     Output a CSV File.
     """
-    output_file = f"data/{table_name}.csv"
+    output_file = f"data/db/{table_name}.csv"
     # Review alternatives to f-strings
     query = f"SELECT * FROM {table_name}"
     
@@ -92,8 +92,8 @@ if __name__ == "__main__":
     logging.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
     
     # Secure output folder exists
-    if not os.path.exists("data/"):
-        os.makedirs("data/")
+    if not os.path.exists("data/db"):
+        os.makedirs("data/db")
         logging.info("👍 Folder {output_dir} was created!")
 
     # Connection
