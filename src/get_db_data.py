@@ -19,9 +19,11 @@ if not os.path.exists(LOGS_DIRECTORY):
 logging.basicConfig(
     filename="./logs/db_extraction.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
 )
 
+# Logger instanciation
+logging.getLogger(__name__)
 
 def connect_to_sql_server(server, database, login, password):
     try:
