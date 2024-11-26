@@ -25,6 +25,7 @@ logging.basicConfig(
 # Logger instanciation
 logging.getLogger(__name__)
 
+
 def connect_to_sql_server(server, database, login, password):
     try:
         logging.info(f"Connexion au serveur : {server}, base de données : {database}")
@@ -42,7 +43,7 @@ def connect_to_sql_server(server, database, login, password):
     except Exception as e:
         logging.error("⚠️ Connection Error to SQL server: {e}")
         raise
-        
+
 
 def get_tables_names(connection):
     query = f"""
@@ -51,7 +52,7 @@ def get_tables_names(connection):
      WHERE TABLE_SCHEMA IN ('Person', 'Production', 'Sales')
        AND TABLE_NAME NOT LIKE 'v%'
     """
-    
+
     try:
         # Squeeze is here to transform the DataFrame in a Series
         df = pd.read_sql_query(query, connection)
@@ -70,7 +71,7 @@ def get_table_data(connection, table_name: str) -> None:
     output_file = f"data/db/{table_name}.csv"
     # Review alternatives to f-strings
     query = f"SELECT * FROM {table_name}"
-    
+
     try:
         df = pd.read_sql_query(query, connection)
         logging.info(f"5 first lines of extracted data:\n {df.head()}")
@@ -81,7 +82,7 @@ def get_table_data(connection, table_name: str) -> None:
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    
+
     SQL_SERVER = os.getenv("SQL_SERVER")
     SQL_DB = os.getenv("SQL_DB")
     SQL_ID = os.getenv("SQL_ID")
@@ -93,7 +94,7 @@ if __name__ == "__main__":
         raise ValueError("⚠️ At least one environment variable missing!")
 
     logging.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
-    
+
     # Secure output folder exists
     if not os.path.exists("data/db"):
         os.makedirs("data/db")
@@ -103,7 +104,7 @@ if __name__ == "__main__":
     conn = connect_to_sql_server(SQL_SERVER, SQL_DB, SQL_ID, SQL_PW)
 
     tables_names = get_tables_names(conn)
-    
+
     for table_name in tqdm(tables_names, desc="Processing Tables"):
         get_table_data(conn, table_name)
 
