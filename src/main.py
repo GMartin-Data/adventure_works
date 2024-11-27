@@ -22,7 +22,7 @@ if not os.path.exists(log_dir):
 
 logging.basicConfig(
     filename="./logs/parquet_extraction.log",
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
 )
 
@@ -76,7 +76,7 @@ def download_parquet_with_sas(container_url, blob_name, download_path):
         with open(download_path, "wb") as file:
             file.write(blob_client.download_blob().readall())
 
-        logging.info(f"✅ Downloaded blob: {blob_name} -> {download_path}")
+        logging.debug(f"✅ Downloaded blob: {blob_name} -> {download_path}")
     except Exception as e:
         logging.error(f"❌ Error during download of {blob_name}: {e}")
         raise
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     full_url = generate_sas_url()
 
     blobs_list = list_blobs_with_extension(full_url)
-    logging.info(f"✅ List of parquet files: {blobs_list}")
+    logging.debug(f"✅ List of parquet files: {blobs_list}")
 
     for blob in tqdm(blobs_list, desc="Parquet Files Download...", unit="file"):
         download_path = f"./data/{blob}"
