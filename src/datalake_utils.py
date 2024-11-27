@@ -1,10 +1,41 @@
+from datetime import datetime, timedelta, timezone
 import os
 from typing import List
 
-from azure.storage.blob import ContainerClient
-from rich import print as rprint
+from azure.storage.blob import (
+    ContainerClient,
+    ContainerSasPermissions,
+    generate_container_sas
+)
+from dotenv import load_dotenv
 
-from sas_url import generate_sas_url
+
+def generate_sas_url(logger) -> None:
+    """Generate a SAS url and store it within the SAS_URL environment variable.
+
+    Args:
+        logger: the logger instance used
+    """
+    # Load environment variables
+    load_dotenv()
+
+    DATALAKE = os.getenv("DATALAKE")
+    AZURE_ACCOUNT_STORAGE_KEY = os.getenv("AZURE_STORAGE_ACCOUNT_KEY")
+    BLOB_CONTAINER = os.getenv("BLOB_CONTAINER")
+    try:
+        # Generate SAS token
+        sas_token = generate_container_sas(
+            account_name=DATALAKE,
+            account_key=AZURE_ACCOUNT_STORAGE_KEY,
+            container_name=BLOB_CONTAINER,
+            permission=ContainerSasPermissions(read=True, list=True),
+            expiry=datetime.now(timezone.utc) + timedelta(hours=1),
+        )
+        os.environ["SAS_URL"] = (
+            f"https://{DATALAKE}.blob.core.windows.net/{BLOB_CONTAINER}?{sas_token}"
+        )
+    except Exception as e:
+        logger.error(f"❌ SAS Error : {e}")
 
 
 generate_sas_url()
@@ -48,7 +79,7 @@ def download_folder_blobs(
     Args:
         container_client: a ContainerClient Azure object
         folder (str): the Azure source folder's name (with ending / if needed)
-        logger: The logger instance used
+        logger: the logger instance used
         ext_exclude (str | None, optional): a file extension for files to exclude
     """
 
