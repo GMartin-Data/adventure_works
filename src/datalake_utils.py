@@ -3,7 +3,6 @@ import os
 from typing import List
 
 from azure.storage.blob import (
-    ContainerClient,
     ContainerSasPermissions,
     generate_container_sas
 )
@@ -36,12 +35,6 @@ def generate_sas_url(logger) -> None:
         )
     except Exception as e:
         logger.error(f"❌ SAS Error : {e}")
-
-
-generate_sas_url()
-sas_url = os.getenv("SAS_URL")
-
-container_client = ContainerClient.from_container_url(sas_url)
 
 
 def get_folder_blobs(
