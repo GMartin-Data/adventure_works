@@ -10,7 +10,7 @@ from tqdm import tqdm
 # Configure logger
 logging.basicConfig(
     filename="./logs/parquet_processing.log",
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
 )
 
@@ -45,14 +45,13 @@ with open(csv_file, mode="w", newline="", encoding="utf-8") as csv_writefile:
             df.iter_rows(named=True), total=total_rows, desc=f"Processing: '{file}'"
         ):
             # Extract image name and write metadata on CSV
-            image_name = row["image"]["path"].split(".")[0]
+            image_name = row["item_ID"].split("-")[1]
             csv_writer.writerow(
                 [
-                    row["item_ID"],
+                    image_name,
                     row["query"],
                     row["title"],
                     row["position"],
-                    image_name,
                 ]
             )
             # Decode and save image as PNG
