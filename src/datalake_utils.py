@@ -2,10 +2,7 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import List
 
-from azure.storage.blob import (
-    ContainerSasPermissions,
-    generate_container_sas
-)
+from azure.storage.blob import ContainerSasPermissions, generate_container_sas
 from dotenv import load_dotenv
 
 
@@ -47,7 +44,7 @@ def get_folder_blobs(container_client, folder: str) -> List[str]:
         List[str]: a list of blob names
     """
     blobs_names = [
-        blob.name 
+        blob.name
         for blob in container_client.list_blobs(name_starts_with=folder)
         if (not blob.name.endswith(".xlsx")) and ("." in blob.name)
     ]
@@ -95,7 +92,6 @@ def download_folder_blobs(
                 with open(local_path, "wb") as write_file:
                     blob_client.download_blob().readinto(write_file)
                 logger.debug(f"✅ Successfully downloaded {blob_name} to {local_path}")
-               
+
             except Exception as e:
                 logger.error(f"❌ Error downloading {blob_name}: {e}")
- 
