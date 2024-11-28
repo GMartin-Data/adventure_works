@@ -2,11 +2,11 @@ import logging
 import os
 from typing import Any
 
+from dotenv import load_dotenv
+
 
 def create_logger(
-    logger_name: str,
-    log_file_path: str, 
-    level: int = logging.DEBUG
+    logger_name: str, log_file_path: str, level: int = logging.DEBUG
 ) -> logging.Logger:
     """Create a custom logger.
     Args:
@@ -40,7 +40,7 @@ def create_logger(
         # Set level for handlers
         file_handler.setLevel(level)
         console_handler.setLevel(level)
-    
+
         # Add handlers to the logger
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
@@ -53,3 +53,21 @@ def get_env(key: str) -> Any:
     if value := os.getenv(key):
         return value
     raise ValueError(f"⚠️ The environment variable '{key}' is not defined!")
+
+
+def init_project():
+    """
+    Initialize project with:
+    - sourcing environment variables,
+    - creating logs and data folders.
+    """
+
+    load_dotenv()
+
+    LOGS_DIR = get_env("LOGS_DIR")
+    if not os.path.exists(LOGS_DIR):
+        os.makedirs(LOGS_DIR)
+
+    DATA_DIR = get_env("DATA_DIR")
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
