@@ -13,7 +13,7 @@ from utils import create_logger, get_env, init_project
 init_project()  # Should be removed when not testing
 
 LOGS_DIR = get_env("LOGS_DIR")
-logger = create_logger(__name__, f"{LOGS_DIR}/db_extraction.log")
+logger = create_logger(__name__, f"{LOGS_DIR}/extract_from_db.log")
 
 
 def connect_to_sql_server(server, database, login, password):
