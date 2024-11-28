@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 
-def create_logger(log_file_path: str, level: int = logging.INFO) -> logging.Logger:
+def create_logger(log_file_path: str, level: int = logging.DEBUG) -> logging.Logger:
     """Create a custom logger.
     Args:
         log_file_path (str): the file path for the file handler
@@ -20,7 +20,7 @@ def create_logger(log_file_path: str, level: int = logging.INFO) -> logging.Logg
 
     # Formatter
     formatter = logging.Formatter(
-        format="{name} - {asctime} - {levelname} - {message}",
+        "{name} - {asctime} - {levelname} - {message}",
         style="{",
         datefmt="%Y-%m-%d %H:%M",
     )
