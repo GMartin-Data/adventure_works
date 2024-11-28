@@ -24,7 +24,6 @@ def create_logger(
     if not logger.hasHandlers():
         # Create handlers
         file_handler = logging.FileHandler(log_file_path, mode="a", encoding="utf-8")
-        console_handler = logging.StreamHandler()
 
         # Create formatter
         formatter = logging.Formatter(
@@ -33,17 +32,10 @@ def create_logger(
             datefmt="%Y-%m-%d %H:%M",
         )
 
-        # Set formatter for handlers
         file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
-
-        # Set level for handlers
         file_handler.setLevel(level)
-        console_handler.setLevel(level)
 
-        # Add handlers to the logger
         logger.addHandler(file_handler)
-        logger.addHandler(console_handler)
 
         return logger
 
