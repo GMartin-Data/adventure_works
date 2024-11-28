@@ -30,6 +30,7 @@ def generate_sas_url(logger) -> None:
         os.environ["SAS_URL"] = (
             f"https://{DATALAKE}.blob.core.windows.net/{BLOB_CONTAINER}?{sas_token}"
         )
+        logger.info(f"✅ SAS URL successfully generated and sourced.")
     except Exception as e:
         logger.error(f"❌ SAS Error : {e}")
 
@@ -72,9 +73,9 @@ def download_folder_blobs(
     blob_names = get_folder_blobs(container_client, folder)
 
     if not blob_names:
-        logger.debug(f"⚠️ No blobs found in folder '{folder}'")
+        logger.info(f"⚠️ No blobs found in folder '{folder}'")
     else:
-        logger.debug(f"🔎 Found {len(blob_names)} blobs in folder '{folder}'")
+        logger.info(f"🔎 Found {len(blob_names)} blobs in folder '{folder}'")
         # Download blobs
         for blob_name in blob_names:
             try:
@@ -85,13 +86,13 @@ def download_folder_blobs(
                 local_path = os.path.join("data", base_folder, file_name)
                 # Ensure the local directory exists
                 os.makedirs(os.path.dirname(local_path), exist_ok=True)
-                logger.debug(f"⬇️ Starting download for: {blob_name}")
+                logger.info(f"⬇️ Starting download for: {blob_name}")
                 # Get Blob Client for the blob name
                 blob_client = container_client.get_blob_client(blob_name)
                 # Download the blob content into the local file
                 with open(local_path, "wb") as write_file:
                     blob_client.download_blob().readinto(write_file)
-                logger.debug(f"✅ Successfully downloaded {blob_name} to {local_path}")
+                logger.info(f"✅ Successfully downloaded {blob_name} to {local_path}")
 
             except Exception as e:
                 logger.error(f"❌ Error downloading {blob_name}: {e}")
