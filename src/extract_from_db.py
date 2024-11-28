@@ -13,7 +13,7 @@ from utils import create_logger, get_env, init_project
 init_project()  # Should be removed when not testing
 
 LOGS_DIR = get_env("LOGS_DIR")
-logger = create_logger(__name__, f"{LOGS_DIR}/datalake_db_extraction.log")
+logger = create_logger(__name__, f"{LOGS_DIR}/db_extraction.log")
 
 
 def connect_to_sql_server(server, database, login, password):
@@ -35,7 +35,8 @@ def connect_to_sql_server(server, database, login, password):
         raise
 
 
-def get_tables_names(connection):
+def get_tables_names(connection) -> List[str]:
+    """Get all the tables names from the target database."""
     query = f"""
     SELECT TABLE_NAME, TABLE_SCHEMA
       FROM INFORMATION_SCHEMA.TABLES
@@ -54,9 +55,14 @@ def get_tables_names(connection):
 
 
 def get_table_data(connection, table_name: str) -> None:
-    """
-    Extract data from Azure database thanks to a SQL query.
-    Output a CSV File.
+    """Extract all data from an Azure database's given table thanks to a SQL query.
+
+    Args:
+        connection: a pyodbc connection
+        table_name (str): the target table's name
+
+    Returns:
+        None, as it outputs the data in a CSV file, within the data/db folder.
     """
     os.makedirs("data/db", exist_ok=True)
     output_file = f"data/db/{table_name}.csv"
