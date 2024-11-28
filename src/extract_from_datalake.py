@@ -1,4 +1,3 @@
-import logging
 import os
 
 from azure.storage.blob import ContainerClient
