@@ -5,6 +5,8 @@ from typing import List
 from azure.storage.blob import ContainerSasPermissions, generate_container_sas
 from dotenv import load_dotenv
 
+from utils import get_env
+
 
 def generate_sas_url(logger) -> None:
     """Generate a SAS url and store it within the SAS_URL environment variable.
@@ -15,9 +17,9 @@ def generate_sas_url(logger) -> None:
     # Load environment variables
     load_dotenv()
 
-    DATALAKE = os.getenv("DATALAKE")
-    AZURE_ACCOUNT_STORAGE_KEY = os.getenv("AZURE_STORAGE_ACCOUNT_KEY")
-    BLOB_CONTAINER = os.getenv("BLOB_CONTAINER")
+    DATALAKE = get_env("DATALAKE")
+    AZURE_ACCOUNT_STORAGE_KEY = get_env("AZURE_STORAGE_ACCOUNT_KEY")
+    BLOB_CONTAINER = get_env("BLOB_CONTAINER")
     try:
         # Generate SAS token
         sas_token = generate_container_sas(
