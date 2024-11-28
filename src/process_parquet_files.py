@@ -1,21 +1,27 @@
 import csv
 import io
-import logging
 import os
 
 from PIL import Image
 import polars as pl
 from tqdm import tqdm
 
-# Configure logger
-logging.basicConfig(
-    filename="./logs/parquet_processing.log",
-    level=logging.DEBUG,
-    format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
-)
+from utils import create_logger, get_env, init_project
 
-# Logger instanciation
-logging.getLogger(__name__)
+
+init_project()  # To remove after testing
+
+# # Configure logger
+# logging.basicConfig(
+#     filename="./logs/parquet_processing.log",
+#     level=logging.DEBUG,
+#     format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
+# )
+
+# # Logger instanciation
+# logging.getLogger(__name__)
+LOGS_DIR = get_env("LOGS_DIR")
+logger = create_logger(__name__, f"{LOGS_DIR}/process_parquet_files.log")
 
 # Set files and folder
 images_folder = "data/parquet/parquet_images/"
@@ -62,5 +68,5 @@ with open(csv_file, mode="w", newline="", encoding="utf-8") as csv_writefile:
                         os.path.join(images_folder, f"{image_name}.png"), format="PNG"
                     )
             except Exception as e:
-                logging.error(f"❌ Error processing image '{image_name}':\n{e}")
-        logging.info(f"✅ Successfully processed file: '{file}'")
+                logger.error(f"❌ Error processing image '{image_name}':\n{e}")
+        logger.info(f"✅ Successfully processed file: '{file}'")
