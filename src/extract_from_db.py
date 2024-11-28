@@ -18,7 +18,7 @@ SQL_DB = get_env("SQL_DB")
 SQL_ID = get_env("SQL_ID")
 SQL_PW = get_env("SQL_PW")
 
-logger.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
+logger.info(f"Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
 
 conn = connect_to_sql_server(logger, SQL_SERVER, SQL_DB, SQL_ID, SQL_PW)
 
