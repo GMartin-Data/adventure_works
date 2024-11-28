@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import List
 import warnings
@@ -8,27 +7,18 @@ from tqdm import tqdm
 import pandas as pd
 import pyodbc
 
-# 0. Load and source credentials
-load_dotenv()
+from utils import create_logger, get_env, init_project
 
-LOGS_DIRECTORY = "./logs"
-if not os.path.exists(LOGS_DIRECTORY):
-    os.makedirs(LOGS_DIRECTORY)
 
-# Logger configuration
-logging.basicConfig(
-    filename="./logs/db_extraction.log",
-    level=logging.INFO,
-    format="%(name)s - %(asctime)s - %(levelname)s - %(message)s",
-)
+init_project()
 
-# Logger instanciation
-logging.getLogger(__name__)
+LOGS_DIR = get_env("LOGS_DIR")
+logger = create_logger(__name__, f"{LOGS_DIR}/datalake_db_extraction.log")
 
 
 def connect_to_sql_server(server, database, login, password):
     try:
-        logging.info(f"Connexion au serveur : {server}, base de données : {database}")
+        logger.info(f"Connexion au serveur : {server}, base de données : {database}")
 
         connection = pyodbc.connect(
             "Driver={ODBC Driver 18 for SQL Server};"
@@ -38,10 +28,10 @@ def connect_to_sql_server(server, database, login, password):
             "Encrypt=yes;TrustServerCertificate=no;"
             "Connection Timeout=30;"
         )
-        logging.info("👍 Successfully connected to SQL server!")
+        logger.info("👍 Successfully connected to SQL server!")
         return connection
     except Exception as e:
-        logging.error("⚠️ Connection Error to SQL server: {e}")
+        logger.error("⚠️ Connection Error to SQL server: {e}")
         raise
 
 
@@ -56,11 +46,11 @@ def get_tables_names(connection):
     try:
         # Squeeze is here to transform the DataFrame in a Series
         df = pd.read_sql_query(query, connection)
-        logging.info(f"Got {len(df)} table names")
+        logger.info(f"Got {len(df)} table names")
         df["full_name"] = df.TABLE_SCHEMA + "." + df.TABLE_NAME
         return df.full_name.to_list()
     except Exception as e:
-        logging.error(f"An error occured during list extraction: {e}")
+        logger.error(f"An error occured during list extraction: {e}")
 
 
 def get_table_data(connection, table_name: str) -> None:
@@ -68,16 +58,17 @@ def get_table_data(connection, table_name: str) -> None:
     Extract data from Azure database thanks to a SQL query.
     Output a CSV File.
     """
+    os.makedirs("data/db", exist_ok=True)
     output_file = f"data/db/{table_name}.csv"
     # Review alternatives to f-strings
     query = f"SELECT * FROM {table_name}"
 
     try:
         df = pd.read_sql_query(query, connection)
-        logging.info(f"✅ Successfully extracted data from table '{table_name}'")
+        logger.info(f"✅ Successfully extracted data from table '{table_name}'")
         df.to_csv(output_file, index=False)
     except Exception as e:
-        logging.error(
+        logger.error(
             f"❌ An error occured during data extractionfrom table '{table_name}':\n{e}"
         )
 
@@ -85,24 +76,13 @@ def get_table_data(connection, table_name: str) -> None:
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
-    SQL_SERVER = os.getenv("SQL_SERVER")
-    SQL_DB = os.getenv("SQL_DB")
-    SQL_ID = os.getenv("SQL_ID")
-    SQL_PW = os.getenv("SQL_PW")
+    SQL_SERVER = get_env("SQL_SERVER")
+    SQL_DB = get_env("SQL_DB")
+    SQL_ID = get_env("SQL_ID")
+    SQL_PW = get_env("SQL_PW")
 
-    # Secure credentials are properly set
-    if not all([SQL_SERVER, SQL_DB, SQL_ID, SQL_PW]):
-        logging.error("⚠️ At least one environment variable missing!")
-        raise ValueError("⚠️ At least one environment variable missing!")
+    logger.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
 
-    logging.info("Connexion on SERVER={SQL_SERVER}, DATABASE={SQL_DB}")
-
-    # Secure output folder exists
-    if not os.path.exists("data/db"):
-        os.makedirs("data/db")
-        logging.info(f"👍 Folder 'data/db' was created!")
-
-    # Connection
     conn = connect_to_sql_server(SQL_SERVER, SQL_DB, SQL_ID, SQL_PW)
 
     tables_names = get_tables_names(conn)
