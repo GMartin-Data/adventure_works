@@ -5,11 +5,11 @@ from azure.storage.blob import ContainerClient
 from datalake_utils import generate_sas_url, download_folder_blobs
 from utils import (
     cleanup_file,
-    create_logger, 
-    extract_tgz_with_progress, 
-    get_env, 
-    init_project, 
-    unzip_archive_with_progress
+    create_logger,
+    extract_tgz_with_progress,
+    get_env,
+    init_project,
+    unzip_archive_with_progress,
 )
 
 
@@ -32,8 +32,8 @@ for folder in ("machine_learning/", "nlp_data/", "product_eval/"):
         folder,
         logger,
     )
-    
-# Unzip 
+
+# Unzip
 ml_dir = Path("data/machine_learning")
 archive_path = ml_dir / "reviews.zip"
 extract_to = ml_dir
@@ -47,8 +47,8 @@ if is_zip_extracted:
     tgz_path = Path("data/machine_learning/amazon_review_polarity_csv.tgz")
     extract_to = Path("data/machine_learning/amazon_review_polarity_csv")
     extract_to.mkdir(parents=True, exist_ok=True)
-    
+
     is_tgz_extracted = extract_tgz_with_progress(logger, tgz_path, extract_to)
-    
+
     if is_tgz_extracted:
         cleanup_file(logger, tgz_path)

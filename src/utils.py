@@ -84,13 +84,15 @@ def unzip_archive_with_progress(logger, archive_path: Path, extract_to: Path) ->
     if not archive_path.is_file():
         logger.error(f"⚠️ The archve file '{archive_path}' does not exist!")
         return False
-    
+
     try:
         with zipfile.ZipFile(archive_path, "r") as zip_read:
             file_list = zip_read.infolist()
             total_files = len(file_list)
-            logger.info(f"⏳ Starting extraction of {total_files} files from '{archive_path.name}'")
-            
+            logger.info(
+                f"⏳ Starting extraction of {total_files} files from '{archive_path.name}'"
+            )
+
             with tqdm(total=total_files, desc="⛏️ Extracting ZIP", unit="file") as pbar:
                 for file_info in file_list:
                     zip_read.extract(file_info, extract_to)
@@ -98,7 +100,9 @@ def unzip_archive_with_progress(logger, archive_path: Path, extract_to: Path) ->
         logger.info(f"✅ Successful extracted '{archive_path.name}' to '{extract_to}'.")
         return True
     except zipfile.BadZipFile:
-        logger.error(f"❌ The file '{archive_path}' is not a valid archive or is corrupted.")
+        logger.error(
+            f"❌ The file '{archive_path}' is not a valid archive or is corrupted."
+        )
     except Exception as e:
         logger.error(f"❌ An error occurred while extracting '{archive_path}': {e}")
     return False
@@ -119,24 +123,30 @@ def extract_tgz_with_progress(logger, tgz_path: Path, extract_to: Path) -> bool:
     if not tgz_path.is_file():
         logger.error(f"⚠️ The TGZ file '{tgz_path}' does not exist!")
         return False
-    
+
     try:
         with tarfile.open(tgz_path, "r") as tar_read:
             members = tar_read.getmembers()
             total_members = len(members)
-            logger.info(f"⏳ Starting extraction of {total_members} files from '{tgz_path.name}'")
-            
-            with tqdm(total=total_members, desc="⛏️ Extracting TGZ", unit="file") as pbar:
+            logger.info(
+                f"⏳ Starting extraction of {total_members} files from '{tgz_path.name}'"
+            )
+
+            with tqdm(
+                total=total_members, desc="⛏️ Extracting TGZ", unit="file"
+            ) as pbar:
                 for member in members:
                     tar_read.extract(member, extract_to)
                     pbar.update(1)
-        
+
         logger.info(f"✅ Successfully extracted '{tgz_path}' to '{extract_to}'.")
         return True
     except tarfile.ReadError:
-        logger.error(f"❌ The file '{tgz_path}' is not a valid TGZ archive or is corrupted.")
+        logger.error(
+            f"❌ The file '{tgz_path}' is not a valid TGZ archive or is corrupted."
+        )
     except Exception as e:
-        logger.error(f"❌ An error occurred while extracting '{tgz_path}': {e}")   
+        logger.error(f"❌ An error occurred while extracting '{tgz_path}': {e}")
 
 
 def cleanup_file(logger, file_path: Path) -> bool:
@@ -148,11 +158,13 @@ def cleanup_file(logger, file_path: Path) -> bool:
 
     Returns:
         bool: True if deletion was successful, False otherwise.
-    """    
+    """
     if not file_path.is_file():
-        logger.warning(f"⚠️ The file '{file_path}' does not exist and cannot be deleted.")
+        logger.warning(
+            f"⚠️ The file '{file_path}' does not exist and cannot be deleted."
+        )
         return False
-    
+
     try:
         file_path.unlink()
         logger.info(f"✅ Successfully deleted '{file_path.name}'.")
