@@ -8,11 +8,8 @@ from utils import create_logger, get_env, init_project
 
 init_project()
 
-# LOGS_DIR = get_env("LOGS_DIR")
-# if not os.path.exists(LOGS_DIR):
-#     os.makedirs(LOGS_DIR)
 LOGS_DIR = get_env("LOGS_DIR")
-logger = create_logger(__name__, f"{LOGS_DIR}/datalake_extraction.log")
+logger = create_logger(__name__, f"{LOGS_DIR}/extract_from_datalake.log")
 
 # Source environment and generate SAS URL
 generate_sas_url(logger)
