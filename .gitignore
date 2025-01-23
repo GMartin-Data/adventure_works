@@ -108,3 +108,6 @@ data
 
 # Don't commit logs
 logs
+
+# Weird bug with .venv
+.venv
